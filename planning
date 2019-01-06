@@ -1,0 +1,28 @@
+Project Planning
+
+DEBT
+Read Debts by CSV
+Add new Debt by request
+Update Debt by request
+Remove Debt by request
+Show all Debts
+Show Debt per day
+Show Debt per month
+Show Debt per year
+Show Debt Summary by Paid
+Show Debt Summary by Planning
+Show Debt Summary by Category
+Show Debt Summary by Subcategory
+
+INCOME
+Add new Income by request
+Update Income by request
+Remove Income by request
+Show all Income
+Show Income per day
+Show Income per month
+Show Income per year
+Show Income Summary by Paid
+Show Income Summary by Planning
+Show Income Summary by Category
+Show Income Summary by Subcategory
