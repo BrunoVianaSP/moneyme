@@ -9,7 +9,7 @@ router.get('/forgot', forgot);
 router.get('/', getAll);
 router.put('/update', update);
 router.delete('/:id', _delete);
-  
+
 function authenticate(req, res, next) {
     userService.authenticate(req.body)
         .then(user => user ? res.json(user) : res.status(400).json({ message: 'Username/email or password is incorrect' }))
