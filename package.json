@@ -18,6 +18,7 @@
     "body-parser": "^1.18.3",
     "cors": "^2.8.5",
     "express-jwt": "^5.3.1",
+    "infobip": "0.0.4",
     "mongodb": "^3.1.4",
     "mongoose": "^5.2.10",
     "nodemon": "^1.18.9",
