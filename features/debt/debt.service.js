@@ -24,7 +24,7 @@ async function newDebt(debtParam) {
             console.log({res});
             const debt = new Debt(res);
             debt.day = utils.getDayName(debt.date);
-            await debt.save();           
+            debt.save();           
         });
         return;
     } else {
