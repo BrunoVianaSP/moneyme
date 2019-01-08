@@ -6,7 +6,8 @@ module.exports = {
     newDebt,
     updateDebt,
     removeDebt,
-    getAllDebts
+    getAllDebts,
+    getAllDebtsMonthly
 };
 
 async function getById(id) {
@@ -45,8 +46,42 @@ async function getAllDebts() {
         debts : debts,
         sum : sum
     }
-    
+
     return summary;
 }
+
+// async function getAllDebtsMonthly() {
+//       var summary = Debt.group(
+//         {
+//           key: { item: 1, value: 1 },
+//           cond: { value: { $gt: 0 } },
+//           reduce: function( curr, result ) {
+//                       result.total += curr.item.qty;
+//                   },
+//           initial: { total : 0 }
+//         }
+//      )
+//     return summary;
+// }
+
+async function getAllDebtsMonthly() {
+    var gr = {
+        key: { value: 1 },
+        cond: { value: { $gt: 0 } },
+        reduce: function( curr, result ) {
+                    result.total += curr.value;
+        },
+        initial: { total : 0 }
+      };
+
+   var summary = Debt.aggregate([
+    { $match: {} }, 
+    { $group: gr }]
+   );
+
+  return summary;
+}
+
+
  
 
