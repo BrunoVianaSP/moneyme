@@ -7,7 +7,8 @@ module.exports = {
     updateDebt,
     removeDebt,
     getAllDebts,
-    getAllDebtsMonthly
+    getAllDebtsMonthly,
+    getAllDebtsDaily
 };
 
 async function getById(id) {
@@ -15,8 +16,20 @@ async function getById(id) {
 }
 
 async function newDebt(debtParam) {
-    const debt = new Debt(debtParam);
-    debt.day = utils.getDayName(debt.date);
+    
+    
+    if(debtParam instanceof Array) {
+        console.log({debtParam});
+        debtParam.forEach( function(res) {
+            console.log({res});
+            const debt = new Debt(res);
+            debt.day = utils.getDayName(debt.date);
+            await debt.save();           
+        });
+        return;
+    } else {
+        debt.day = utils.getDayName(debt.date);
+    }
     await debt.save();
 }
 
@@ -50,34 +63,47 @@ async function getAllDebts() {
     return summary;
 }
 
-// async function getAllDebtsMonthly() {
-//       var summary = Debt.group(
-//         {
-//           key: { item: 1, value: 1 },
-//           cond: { value: { $gt: 0 } },
-//           reduce: function( curr, result ) {
-//                       result.total += curr.item.qty;
-//                   },
-//           initial: { total : 0 }
-//         }
-//      )
-//     return summary;
-// }
-
 async function getAllDebtsMonthly() {
-    var gr = {
-        key: { value: 1 },
-        cond: { value: { $gt: 0 } },
-        reduce: function( curr, result ) {
-                    result.total += curr.value;
-        },
-        initial: { total : 0 }
-      };
+    var debts = await Debt.find().select('-hash');
 
-   var summary = Debt.aggregate([
-    { $match: {} }, 
-    { $group: gr }]
-   );
+    var summary = Object.values(debts.reduce((result, {
+        date,
+        value
+    }) => {
+        var month = utils.getMonthName(date);
+
+        if (!result[month]) result[month] = {
+            month: month,
+            total: 0
+        };
+        // Append to group
+        result[month].total += value;
+
+        return result;
+    }, {}));
+
+  return summary;
+}
+
+async function getAllDebtsDaily() {
+    var debts = await Debt.find().select('-hash');
+
+    var summary = Object.values(debts.reduce((result, {
+        date,
+        weekday,
+        value
+    }) => {
+        // Create new group
+        if (!result[date]) result[date] = {
+            date,
+            weekday: utils.getDayName(date),
+            total: 0
+        };
+        // Append to group
+        result[date].total += value;
+
+        return result;
+    }, {}));
 
   return summary;
 }

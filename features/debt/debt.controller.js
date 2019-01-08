@@ -5,6 +5,7 @@ const debtService = require('./debt.service');
 // routes
 router.post('/', newDebt);
 router.get('/', getAll);
+router.get('/daily', getSummaryDaily);
 router.get('/monthly', getSummaryMonthly);
 
 function newDebt(req, res, next) {
@@ -15,13 +16,19 @@ function newDebt(req, res, next) {
 
 function getAll(req, res, next) {
     debtService.getAllDebts()
-        .then(summary => res.json({"status" : 201, "body" : summary}))
+        .then(summary => res.json({"status" : 200, "body" : summary}))
+        .catch(err => next(err));
+}
+
+function getSummaryDaily(req, res, next) {
+    debtService.getAllDebtsDaily()
+        .then(summary => res.json({"status" : 200, "body" : summary}))
         .catch(err => next(err));
 }
 
 function getSummaryMonthly(req, res, next) {
     debtService.getAllDebtsMonthly()
-        .then(summary => res.json({"status" : 201, "body" : summary}))
+        .then(summary => res.json({"status" : 200, "body" : summary}))
         .catch(err => next(err));
 }
 
