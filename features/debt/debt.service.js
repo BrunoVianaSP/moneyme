@@ -16,21 +16,23 @@ async function getById(id) {
 }
 
 async function newDebt(debtParam) {
-    
-    
     if(debtParam instanceof Array) {
-        console.log({debtParam});
-        debtParam.forEach( function(res) {
-            console.log({res});
-            const debt = new Debt(res);
-            debt.day = utils.getDayName(debt.date);
-            debt.save();           
-        });
-        return;
+        saveDebts(debtParam);
     } else {
-        debt.day = utils.getDayName(debt.date);
+        await saveDebt(debtParam)
     }
-    await debt.save();
+}
+
+function saveDebts(debts) {
+    debts.forEach(function (res) {
+        saveDebt(res)
+    });
+}
+
+function saveDebt(debtParam) {
+    const debt = new Debt(debtParam);
+    debt.day = utils.getDayName(debt.date);
+    debt.save();
 }
 
 async function updateDebt(debtParam) {
