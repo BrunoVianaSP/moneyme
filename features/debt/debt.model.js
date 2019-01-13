@@ -7,7 +7,7 @@ const schema = new Schema({
     item: { type: String, required: true },
     category: { type: String, required: true },
     subcategory: { type: String, required: false },
-    value: { type: Number, required: true },
+    price: { type: Number, required: true },
     status: { type: String, required: false },
     createdDate: { type: Date, default: Date.now }
 });

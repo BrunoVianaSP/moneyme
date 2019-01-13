@@ -51,15 +51,25 @@ async function removeDebt(id) {
 
 async function getAllDebts() {
     var debts = await Debt.find().select('-hash');
-    var sum = 0;
+    var total = 0;
+    var paid = 0;
+    var unpaid = 0;
 
     debts.forEach(function(debt){
-        sum += debt.value;
+        if(debt.status === "P") {
+           paid += debt.price; 
+        } else if(debt.status === "NP") {
+            unpaid += debt.price;
+        }
+        total += debt.price;
     });
 
     const summary = {
         debts : debts,
-        sum : sum
+        total : total,
+        paid : paid,
+        unpaid : unpaid,
+        items: debts.length
     }
 
     return summary;
