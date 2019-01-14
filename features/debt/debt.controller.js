@@ -7,6 +7,7 @@ router.post('/', newDebt);
 router.get('/', getAll);
 router.get('/daily', getSummaryDaily);
 router.get('/monthly', getSummaryMonthly);
+router.get('/month', getSummaryByMonth);
 
 function newDebt(req, res, next) {
     debtService.newDebt(req.body)
@@ -31,5 +32,13 @@ function getSummaryMonthly(req, res, next) {
         .then(summary => res.json({"status" : 200, "body" : summary}))
         .catch(err => next(err));
 }
+
+function getSummaryByMonth(req, res, next) {
+    debtService.getAllDebtsByMonth(req.query.month, req.query.year)
+        .then(summary => res.json({"status" : 200, "body" : summary}))
+        .catch(err => next(err));
+}
+
+
 
 module.exports = router;

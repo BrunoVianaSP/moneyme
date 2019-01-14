@@ -8,8 +8,11 @@ module.exports = {
     removeDebt,
     getAllDebts,
     getAllDebtsMonthly,
-    getAllDebtsDaily
+    getAllDebtsDaily,
+    getAllDebtsByMonth
 };
+
+
 
 async function getById(id) {
     return await Debt.findById(id).select('-hash');
@@ -120,6 +123,36 @@ async function getAllDebtsDaily() {
   return summary;
 }
 
+async function getAllDebtsByMonth(month, year) {
+    // var debts = await Debt.aggregate([{$project: {name: 1, month: {$month: '$bday'}}},
+    //                                   {  $match: {month: month}}]);
+    var debts = await Debt.aggregate([{ $project: {year: "$date",
+                                                   month: "$date"},
+                                        $match:   {year: year,
+                                                   month: month}  
+                                      } ]);
 
- 
+    var total = 0;
+    var paid = 0;
+    var unpaid = 0;
+
+    debts.forEach(function(debt){
+        if(debt.status === "P") {
+           paid += debt.price; 
+        } else if(debt.status === "NP") {
+            unpaid += debt.price;
+        }
+        total += debt.price;
+    });
+
+    const summary = {
+        debts : debts,
+        total : total,
+        paid : paid,
+        unpaid : unpaid,
+        items: debts.length
+    }
+
+    return summary;
+}
 
