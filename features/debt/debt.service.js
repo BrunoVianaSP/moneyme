@@ -68,7 +68,7 @@ async function getAllDebtsMonthly() {
             month: month,
             total: 0
         };
-        // Append to group
+        
         result[month].total += value;
 
         return result;
