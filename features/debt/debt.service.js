@@ -124,14 +124,21 @@ async function getAllDebtsDaily() {
 }
 
 async function getAllDebtsByMonth(month, year) {
-    // var debts = await Debt.aggregate([{$project: {name: 1, month: {$month: '$bday'}}},
-    //                                   {  $match: {month: month}}]);
-    var debts = await Debt.aggregate([{ $project: {year: "$date",
-                                                   month: "$date"},
-                                        $match:   {year: year,
-                                                   month: month}  
-                                      } ]);
-
+    console.log({month});
+    console.log({year});
+    var debts =  await Debt.aggregate([
+        { "$redact": { 
+            "$cond": [ 
+                { "$and": [ 
+                    { "$eq": [ { "$year": "$date" }, year ] }, 
+                    { "$eq": [ { "$month": "$date" }, month ] }
+                ] }, 
+                "$$KEEP", 
+                "$$PRUNE" 
+             ] } 
+        }
+    ]);
+    
     var total = 0;
     var paid = 0;
     var unpaid = 0;

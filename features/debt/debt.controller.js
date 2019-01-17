@@ -34,7 +34,7 @@ function getSummaryMonthly(req, res, next) {
 }
 
 function getSummaryByMonth(req, res, next) {
-    debtService.getAllDebtsByMonth(req.query.month, req.query.year)
+    debtService.getAllDebtsByMonth( parseInt(req.query.month), parseInt(req.query.year)) 
         .then(summary => res.json({"status" : 200, "body" : summary}))
         .catch(err => next(err));
 }
