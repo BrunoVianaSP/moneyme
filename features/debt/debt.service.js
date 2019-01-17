@@ -1,5 +1,6 @@
 const db = require('../../shared/db');
 const utils = require('../../shared/utils');
+const summaryService = require('./../summary/summary.service');
 const Debt = db.Debt;
 
 module.exports = {
@@ -11,8 +12,6 @@ module.exports = {
     getAllDebtsDaily,
     getAllDebtsByMonth
 };
-
-
 
 async function getById(id) {
     return await Debt.findById(id).select('-hash');
@@ -39,8 +38,6 @@ function saveDebt(debtParam) {
 }
 
 async function updateDebt(debtParam) {
-    // console.log({userParam});
-
     const user = await Debt.findOne({ _id: debtParam._id });
 
     Object.assign(user, debtParam);
@@ -54,27 +51,7 @@ async function removeDebt(id) {
 
 async function getAllDebts() {
     var debts = await Debt.find().select('-hash');
-    var total = 0;
-    var paid = 0;
-    var unpaid = 0;
-
-    debts.forEach(function(debt){
-        if(debt.status === "P") {
-           paid += debt.price; 
-        } else if(debt.status === "NP") {
-            unpaid += debt.price;
-        }
-        total += debt.price;
-    });
-
-    const summary = {
-        debts : debts,
-        total : total,
-        paid : paid,
-        unpaid : unpaid,
-        items: debts.length
-    }
-
+    const summary = summaryService.debtSummary(debts);
     return summary;
 }
 
@@ -124,8 +101,6 @@ async function getAllDebtsDaily() {
 }
 
 async function getAllDebtsByMonth(month, year) {
-    console.log({month});
-    console.log({year});
     var debts =  await Debt.aggregate([
         { "$redact": { 
             "$cond": [ 
@@ -139,27 +114,10 @@ async function getAllDebtsByMonth(month, year) {
         }
     ]);
     
-    var total = 0;
-    var paid = 0;
-    var unpaid = 0;
-
-    debts.forEach(function(debt){
-        if(debt.status === "P") {
-           paid += debt.price; 
-        } else if(debt.status === "NP") {
-            unpaid += debt.price;
-        }
-        total += debt.price;
-    });
-
-    const summary = {
-        debts : debts,
-        total : total,
-        paid : paid,
-        unpaid : unpaid,
-        items: debts.length
-    }
+    const summary = summaryService.debtSummary(debts);
 
     return summary;
 }
+
+
 
