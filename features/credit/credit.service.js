@@ -1,123 +1,41 @@
 const db = require('../../shared/db');
-const utils = require('../../shared/utils');
 const summaryService = require('./../summary/summary.service');
-const Debt = db.Debt;
+const Credit = db.Credit;
+const Card = db.Card;
 
 module.exports = {
-    newDebt,
-    updateDebt,
-    removeDebt,
-    getAllDebts,
-    getAllDebtsMonthly,
-    getAllDebtsDaily,
-    getAllDebtsByMonth
+    create,
+    getAll,
+    update,
+    _delete
 };
 
-async function getById(id) {
-    return await Debt.findById(id).select('-hash');
-}
+async function create(param) {
+    const card = await Card.findOne({name: param.card});
 
-async function newDebt(debtParam) {
-    if(debtParam instanceof Array) {
-        saveDebts(debtParam);
-    } else {
-        await saveDebt(debtParam)
+    if(card) {
+       const entity = new Credit(param);   
+       entity.save();
+       return entity;
     }
-}
-
-function saveDebts(debts) {
-    debts.forEach(function (res) {
-        saveDebt(res)
-    });
-}
-
-function saveDebt(debtParam) {
-    const debt = new Debt(debtParam);
-    debt.day = utils.getDayName(debt.date);
-    debt.save();
-}
-
-async function updateDebt(debtParam) {
-    const user = await Debt.findOne({ _id: debtParam._id });
-
-    Object.assign(user, debtParam);
-
-    await user.save();
-}
-
-async function removeDebt(id) {
-    await Debt.findByIdAndRemove(id);
-}
-
-async function getAllDebts() {
-    var debts = await Debt.find().select('-hash');
-    const summary = summaryService.debtSummary(debts);
-    return summary;
-}
-
-async function getAllDebtsMonthly() {
-    var debts = await Debt.find().select('-hash');
-
-    var summary = Object.values(debts.reduce((result, {
-        date,
-        value
-    }) => {
-        var month = utils.getMonthName(date);
-
-        if (!result[month]) result[month] = {
-            month: month,
-            total: 0
-        };
-        
-        result[month].total += value;
-
-        return result;
-    }, {}));
-
-  return summary;
-}
-
-async function getAllDebtsDaily() {
-    var debts = await Debt.find().select('-hash');
-
-    var summary = Object.values(debts.reduce((result, {
-        date,
-        weekday,
-        value
-    }) => {
-        // Create new group
-        if (!result[date]) result[date] = {
-            date,
-            weekday: utils.getDayName(date),
-            total: 0
-        };
-        // Append to group
-        result[date].total += value;
-
-        return result;
-    }, {}));
-
-  return summary;
-}
-
-async function getAllDebtsByMonth(month, year) {
-    var debts =  await Debt.aggregate([
-        { "$redact": { 
-            "$cond": [ 
-                { "$and": [ 
-                    { "$eq": [ { "$year": "$date" }, year ] }, 
-                    { "$eq": [ { "$month": "$date" }, month ] }
-                ] }, 
-                "$$KEEP", 
-                "$$PRUNE" 
-             ] } 
-        }
-    ]);
     
-    const summary = summaryService.debtSummary(debts);
-
-    return summary;
+    throw new Error("Card " + param.card + " not found.");
 }
 
+async function update(param) {
+    console.log({param});
+    const found = await Credit.findById(param.id).select('-hash');
+    Object.assign(found, param);
+    await found.save();
+}
 
+async function _delete(id) {
+    console.log({id});
+    await Credit.findByIdAndRemove(id);
+}
 
+async function getAll() {
+    var entities = await Credit.find().select('-hash');
+    const summary = summaryService.creditSummary(entities);
+    return summary;
+}

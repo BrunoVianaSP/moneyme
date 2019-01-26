@@ -21,12 +21,14 @@ const userController = require('./features/user/user.controller');
 const debtController = require('./features/debt/debt.controller');
 const cardController = require('./features/card/card.controller');
 const incomeController = require('./features/income/income.controller');
+const creditController = require('./features/credit/credit.controller');
 
 // api routes
 app.use('/user', userController);
 app.use('/debts', debtController);
 app.use('/cards', cardController);
 app.use('/incomes', incomeController);
+app.use('/credits', creditController);
 
 // start server
 const port = process.env.NODE_ENV === 'production' ? 80 : 1314;
