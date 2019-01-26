@@ -9,7 +9,7 @@ const schema = new Schema({
     subcategory: { type: String, required: false },
     price: { type: Number, required: true },
     status: { type: String, required: false },
-    createdDate: { type: Date, default: Date.now }
+    created: { type: Date, default: Date.now }
 });
 
 schema.set('toJSON', { virtuals: true });
