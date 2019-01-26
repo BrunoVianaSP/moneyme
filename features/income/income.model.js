@@ -3,13 +3,13 @@ const Schema = mongoose.Schema;
 
 const schema = new Schema({
     name: { type: String, required: true, unique: true },
-    limit: { type: Number, required: false },
-    due: { type: Number, required: true },
-    tax: { type: Number, required: false },
+    date: { type: Date, required: true },
+    amount: { type: Number, required: true },
+    from: { type: String, required: false },
     created: { type: Date, default: Date.now }
 });
 
 schema.set('toJSON', { virtuals: true });
 
-module.exports = mongoose.model('Card', schema);
+module.exports = mongoose.model('Income', schema);
  

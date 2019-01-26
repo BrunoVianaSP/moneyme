@@ -19,10 +19,12 @@ app.use(errorHandler);
 // controllers
 const userController = require('./features/user/user.controller');
 const debtController = require('./features/debt/debt.controller');
+const cardController = require('./features/card/card.controller');
 
 // api routes
 app.use('/user', userController);
 app.use('/debts', debtController);
+app.use('/cards', cardController);
 
 // start server
 const port = process.env.NODE_ENV === 'production' ? 80 : 1314;

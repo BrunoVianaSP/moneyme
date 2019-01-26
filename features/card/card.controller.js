@@ -1,43 +1,37 @@
 const express = require('express');
 const router = express.Router();
-const debtService = require('./debt.service');
+const cardService = require('./card.service');
  
 // routes
-router.post('/', newDebt);
+router.post('/', create);
 router.get('/', getAll);
-router.get('/daily', getSummaryDaily);
-router.get('/monthly', getSummaryMonthly);
-router.get('/month', getSummaryByMonth);
+router.put('/', update);
+router.delete('/{id}', _delete);
 
-function newDebt(req, res, next) {
-    debtService.newDebt(req.body)
+function create(req, res, next) {
+    cardService.create(req.body)
         .then(() => res.json({"status" : 201}))
         .catch(err => next(err));
 }
 
 function getAll(req, res, next) {
-    debtService.getAllDebts()
+    cardService.getAll()
         .then(summary => res.json({"status" : 200, "body" : summary}))
         .catch(err => next(err));
 }
 
-function getSummaryDaily(req, res, next) {
-    debtService.getAllDebtsDaily()
-        .then(summary => res.json({"status" : 200, "body" : summary}))
+function update(req, res, next) {
+    cardService.update(req.body)
+        .then(() => res.json({"status" : 200}))
         .catch(err => next(err));
 }
 
-function getSummaryMonthly(req, res, next) {
-    debtService.getAllDebtsMonthly()
-        .then(summary => res.json({"status" : 200, "body" : summary}))
+function _delete(req, res, next) {
+    cardService._delete(req.body)
+        .then(() => res.json({"status" : 200}))
         .catch(err => next(err));
 }
 
-function getSummaryByMonth(req, res, next) {
-    debtService.getAllDebtsByMonth( parseInt(req.query.month), parseInt(req.query.year)) 
-        .then(summary => res.json({"status" : 200, "body" : summary}))
-        .catch(err => next(err));
-}
 
 
 
