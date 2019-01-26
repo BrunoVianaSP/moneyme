@@ -15,12 +15,14 @@ async function create(param) {
 }
 
 async function update(param) {
-    const found = await Card.findOne({ _id: param._id });
+    console.log({param});
+    const found = await Card.findById(param.id).select('-hash');
     Object.assign(found, param);
     await found.save();
 }
 
 async function _delete(id) {
+    console.log({id});
     await Card.findByIdAndRemove(id);
 }
 

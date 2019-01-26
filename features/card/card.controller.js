@@ -6,7 +6,7 @@ const cardService = require('./card.service');
 router.post('/', create);
 router.get('/', getAll);
 router.put('/', update);
-router.delete('/{id}', _delete);
+router.delete('/:id', _delete);
 
 function create(req, res, next) {
     cardService.create(req.body)
@@ -27,7 +27,7 @@ function update(req, res, next) {
 }
 
 function _delete(req, res, next) {
-    cardService._delete(req.body)
+    cardService._delete(req.params.id)
         .then(() => res.json({"status" : 200}))
         .catch(err => next(err));
 }
