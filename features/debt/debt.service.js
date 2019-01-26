@@ -4,25 +4,19 @@ const summaryService = require('./../summary/summary.service');
 const Debt = db.Debt;
 
 module.exports = {
-    newDebt,
-    updateDebt,
-    removeDebt,
-    getAllDebts,
-    getAllDebtsMonthly,
-    getAllDebtsDaily,
-    getAllDebtsByMonth
+    create,
+    update,
+    _delete,
+    all,
+    day,
+    daily,
+    month,
+    monthly,
+    year
 };
 
 async function getById(id) {
     return await Debt.findById(id).select('-hash');
-}
-
-async function newDebt(debtParam) {
-    if(debtParam instanceof Array) {
-        saveDebts(debtParam);
-    } else {
-        await saveDebt(debtParam)
-    }
 }
 
 function saveDebts(debts) {
@@ -37,7 +31,15 @@ function saveDebt(debtParam) {
     debt.save();
 }
 
-async function updateDebt(debtParam) {
+async function create(debtParam) {
+    if(debtParam instanceof Array) {
+        saveDebts(debtParam);
+    } else {
+        await saveDebt(debtParam)
+    }
+}
+
+async function update(debtParam) {
     const user = await Debt.findOne({ _id: debtParam._id });
 
     Object.assign(user, debtParam);
@@ -45,17 +47,17 @@ async function updateDebt(debtParam) {
     await user.save();
 }
 
-async function removeDebt(id) {
+async function _delete(id) {
     await Debt.findByIdAndRemove(id);
 }
 
-async function getAllDebts() {
+async function all() {
     var debts = await Debt.find().select('-hash');
     const summary = summaryService.debtSummary(debts);
     return summary;
 }
 
-async function getAllDebtsMonthly() {
+async function monthly() {
     var debts = await Debt.find().select('-hash');
 
     var summary = Object.values(debts.reduce((result, {
@@ -77,36 +79,78 @@ async function getAllDebtsMonthly() {
   return summary;
 }
 
-async function getAllDebtsDaily() {
-    var debts = await Debt.find().select('-hash');
+async function day(year, month, day) {
+    console.log({year, month, day});
 
-    var summary = Object.values(debts.reduce((result, {
-        date,
-        weekday,
-        value
-    }) => {
-        // Create new group
-        if (!result[date]) result[date] = {
-            date,
-            weekday: utils.getDayName(date),
-            total: 0
-        };
-        // Append to group
-        result[date].total += value;
-
-        return result;
-    }, {}));
-
-  return summary;
-}
-
-async function getAllDebtsByMonth(month, year) {
     var debts =  await Debt.aggregate([
         { "$redact": { 
             "$cond": [ 
                 { "$and": [ 
-                    { "$eq": [ { "$year": "$date" }, year ] }, 
+                    { "$eq": [ { "$year": "$date" }, year ] },
+                    { "$eq": [ { "$month": "$date" }, month ] },
+                    { "$eq": [ { "$dayOfMonth": "$date" }, day ] }
+                ] }, 
+                "$$KEEP", 
+                "$$PRUNE" 
+             ] }
+              
+        },
+        {$sort: {"date": -1} } 
+    ]);
+
+    const summary = summaryService.debtSummary(debts);
+
+    return summary;
+}
+
+async function daily(year, month) {
+    console.log(daily);
+    console.log({year, month});
+
+    var debts =  await Debt.aggregate([
+        { "$redact": { 
+            "$cond": [ 
+                { "$and": [ 
+                    { "$eq": [ { "$year": "$date" }, year ] },
                     { "$eq": [ { "$month": "$date" }, month ] }
+                ] }, 
+                "$$KEEP", 
+                "$$PRUNE" 
+             ] }
+              
+        },
+        {$sort: {"date": -1} } 
+    ]);
+
+    const summary = summaryService.debtSummary(debts);
+
+    return summary;
+}
+
+async function month(year, month) {
+    var debts =  await Debt.aggregate([
+        { "$redact": { 
+            "$cond": [ 
+                { "$and": [ 
+                    { "$eq": [ { "$year": "$date" }, year ] }
+                ] }, 
+                "$$KEEP", 
+                "$$PRUNE" 
+             ] } 
+        }
+    ]);
+    
+    const summary = summaryService.debtSummary(debts);
+
+    return summary;
+}
+
+async function year(year) {
+    var debts =  await Debt.aggregate([
+        { "$redact": { 
+            "$cond": [ 
+                { "$and": [ 
+                    { "$eq": [ { "$year": "$date" }, year ] }
                 ] }, 
                 "$$KEEP", 
                 "$$PRUNE" 

@@ -3,39 +3,53 @@ const router = express.Router();
 const debtService = require('./debt.service');
  
 // routes
-router.post('/', newDebt);
-router.get('/', getAll);
-router.get('/daily', getSummaryDaily);
-router.get('/monthly', getSummaryMonthly);
-router.get('/month', getSummaryByMonth);
+router.post('/', create);
+router.get('/', all);
+router.get('/day', day);
+router.get('/daily', daily);
+router.get('/month', month);
+router.get('/monthly', monthly);
+router.get('/year', year);
 
-function newDebt(req, res, next) {
-    debtService.newDebt(req.body)
+function create(req, res, next) {
+    debtService.create(req.body)
         .then(() => res.json({"status" : 201}))
         .catch(err => next(err));
 }
 
-function getAll(req, res, next) {
-    debtService.getAllDebts()
-        .then(summary => res.json({"status" : 200, "body" : summary}))
+function all(req, res, next) {
+    debtService.all()
+        .then(result => res.json({"status" : 200, "body" : result}))
         .catch(err => next(err));
 }
 
-function getSummaryDaily(req, res, next) {
-    debtService.getAllDebtsDaily()
-        .then(summary => res.json({"status" : 200, "body" : summary}))
+function day(req, res, next) {
+    debtService.day(parseInt(req.query.year), parseInt(req.query.month), parseInt(req.query.day))
+        .then(result => res.json({"status" : 200, "body" : result}))
         .catch(err => next(err));
 }
 
-function getSummaryMonthly(req, res, next) {
-    debtService.getAllDebtsMonthly()
-        .then(summary => res.json({"status" : 200, "body" : summary}))
+function daily(req, res, next) {
+    debtService.daily(parseInt(req.query.year), parseInt(req.query.month))
+        .then(result => res.json({"status" : 200, "body" : result}))
         .catch(err => next(err));
 }
 
-function getSummaryByMonth(req, res, next) {
-    debtService.getAllDebtsByMonth( parseInt(req.query.month), parseInt(req.query.year)) 
-        .then(summary => res.json({"status" : 200, "body" : summary}))
+function monthly(req, res, next) {
+    debtService.monthly(parseInt(req.query.year))
+        .then(result => res.json({"status" : 200, "body" : result}))
+        .catch(err => next(err));
+}
+
+function month(req, res, next) {
+    debtService.month(parseInt(req.query.year), parseInt(req.query.month)) 
+        .then(result => res.json({"status" : 200, "body" : result}))
+        .catch(err => next(err));
+}
+
+function year(req, res, next) {
+    debtService.year(parseInt(req.query.year)) 
+        .then(result => res.json({"status" : 200, "body" : result}))
         .catch(err => next(err));
 }
 
