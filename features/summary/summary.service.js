@@ -1,6 +1,7 @@
 module.exports = {
     debtSummary,
-    creditSummary
+    creditSummary,
+    incomeSummary
 };
 
 function debtSummary(debts) {
@@ -28,6 +29,10 @@ function debtSummary(debts) {
 
 function creditSummary(credits) {
     return credits;
+}
+
+function incomeSummary(list) {
+    return list;
 }
 
 

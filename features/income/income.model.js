@@ -5,6 +5,8 @@ const schema = new Schema({
     name: { type: String, required: true, unique: true },
     date: { type: Date, required: true },
     amount: { type: Number, required: true },
+    category: { type: String, required: true },
+    subcategory: { type: String, required: false },
     from: { type: String, required: false },
     created: { type: Date, default: Date.now }
 });
