@@ -152,6 +152,56 @@ async function month(year, month) {
         { "$redact": { 
             "$cond": [ 
                 { "$and": [ 
+                    { "$eq": [ { "$year": "$date" }, year ] },
+                    { "$eq": [ { "$month": "$date" }, month ] }
+                ] }, 
+                "$$KEEP", 
+                "$$PRUNE" 
+             ] } 
+        }
+    ]);
+    
+    const summary = summaryService.debtSummary(debts);
+
+    var body = {};
+
+    summary.debts.forEach(function(debt) {
+        if(debt.date.getMonth() === month) {
+        
+            const monthName = debt.date.getFullYear() + " " + utils.getMonthName(debt.date.getMonth());
+          
+          if (!body[monthName]){
+            body[monthName] = [];
+          } 
+
+          body[monthName].push(debt);
+        }
+    });
+
+    for (var property in body) {
+        if (body.hasOwnProperty(property)) {
+            console.log({property});
+            body[property] = summaryService.debtSummary(body[property]);
+        }
+    }
+
+    const customSummary = {
+        status : summary.status,
+        body : body,
+        total : summary.total,
+        paid : summary.paid,
+        unpaid : summary.unpaid,
+        items : summary.items
+    };
+
+    return customSummary;
+}
+
+async function monthly(year) {
+    var debts =  await Debt.aggregate([
+        { "$redact": { 
+            "$cond": [ 
+                { "$and": [ 
                     { "$eq": [ { "$year": "$date" }, year ] }
                 ] }, 
                 "$$KEEP", 
@@ -162,29 +212,36 @@ async function month(year, month) {
     
     const summary = summaryService.debtSummary(debts);
 
-    return summary;
-}
+    var body = {};
 
-async function monthly() {
-    var debts = await Debt.find().select('-hash');
+    summary.debts.forEach(function(debt) {
+          const monthName = debt.date.getFullYear() + " " + utils.getMonthName(debt.date.getMonth());
+          
+          if (!body[monthName]){
+            body[monthName] = [];
+          } 
 
-    var summary = Object.values(debts.reduce((result, {
-        date,
-        value
-    }) => {
-        var month = utils.getMonthName(date);
+          body[monthName].push(debt);
 
-        if (!result[month]) result[month] = {
-            month: month,
-            total: 0
-        };
-        
-        result[month].total += value;
+    });
 
-        return result;
-    }, {}));
+    for (var property in body) {
+        if (body.hasOwnProperty(property)) {
+            console.log({property});
+            body[property] = summaryService.debtSummary(body[property]);
+        }
+    }
 
-  return summary;
+    const customSummary = {
+        status : summary.status,
+        body : body,
+        total : summary.total,
+        paid : summary.paid,
+        unpaid : summary.unpaid,
+        items : summary.items
+    };
+
+    return customSummary;
 }
 
 async function year(year) {

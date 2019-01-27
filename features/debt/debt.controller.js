@@ -35,14 +35,14 @@ function daily(req, res, next) {
         .catch(err => next(err));
 }
 
-function monthly(req, res, next) {
-    debtService.monthly(parseInt(req.query.year))
+function month(req, res, next) {
+    debtService.month(parseInt(req.query.year), parseInt(req.query.month)) 
         .then(result => res.json({"status" : 200, "body" : result}))
         .catch(err => next(err));
 }
 
-function month(req, res, next) {
-    debtService.month(parseInt(req.query.year), parseInt(req.query.month)) 
+function monthly(req, res, next) {
+    debtService.monthly(parseInt(req.query.year))
         .then(result => res.json({"status" : 200, "body" : result}))
         .catch(err => next(err));
 }
