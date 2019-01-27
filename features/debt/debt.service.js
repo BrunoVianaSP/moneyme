@@ -57,27 +57,7 @@ async function all() {
     return summary;
 }
 
-async function monthly() {
-    var debts = await Debt.find().select('-hash');
 
-    var summary = Object.values(debts.reduce((result, {
-        date,
-        value
-    }) => {
-        var month = utils.getMonthName(date);
-
-        if (!result[month]) result[month] = {
-            month: month,
-            total: 0
-        };
-        
-        result[month].total += value;
-
-        return result;
-    }, {}));
-
-  return summary;
-}
 
 async function day(year, month, day) {
     console.log({year, month, day});
@@ -141,13 +121,30 @@ async function daily(year, month) {
     ]);
 
     const summary = summaryService.debtSummary(debts);
-    
-    // summary.debts.forEach(function(debt) {
-       
-    // });
 
+    var body = {};
 
-    return summary;
+    summary.debts.forEach(function(debt) {
+          const dateName = utils.getDateDigitalName(debt.date);
+          
+          if (!body[dateName]){
+            body[dateName] = [];
+          } 
+
+          body[dateName].push(debt);
+
+    });
+
+    const customSummary = {
+        status : summary.status,
+        body : body,
+        total : summary.total,
+        paid : summary.paid,
+        unpaid : summary.unpaid,
+        items : summary.items
+    };
+
+    return customSummary;
 }
 
 async function month(year, month) {
@@ -166,6 +163,28 @@ async function month(year, month) {
     const summary = summaryService.debtSummary(debts);
 
     return summary;
+}
+
+async function monthly() {
+    var debts = await Debt.find().select('-hash');
+
+    var summary = Object.values(debts.reduce((result, {
+        date,
+        value
+    }) => {
+        var month = utils.getMonthName(date);
+
+        if (!result[month]) result[month] = {
+            month: month,
+            total: 0
+        };
+        
+        result[month].total += value;
+
+        return result;
+    }, {}));
+
+  return summary;
 }
 
 async function year(year) {

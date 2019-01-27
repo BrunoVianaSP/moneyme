@@ -1,7 +1,27 @@
 module.exports = {
     getDayName,
-    getMonthName
+    getMonthName,
+    getDateName,
+    getDateDigitalName
 };
+
+function getDateName(date) {
+    console.log({date});
+    var year = date.getFullYear();
+    var month = getMonthName(date.getMonth());
+    var day = date.getDay();
+    const result =  year + " " + month +  " " + day +  " - " + getDayName(day);
+    return result;
+}
+
+function getDateDigitalName(date) {
+    console.log({date});
+    const monthFix = 1 + date.getMonth(); 
+    var month = monthFix < 10 ? "0" + monthFix : monthFix;
+    var day = date.getDay() < 10 ? "0" + date.getDay() : date.getDay();
+    const result =  date.getFullYear() + "-" + month +  "-" + day;
+    return result;
+}
 
 function getDayName(date) {
     return getDayName(date.getDay());
