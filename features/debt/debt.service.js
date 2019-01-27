@@ -99,8 +99,26 @@ async function day(year, month, day) {
     ]);
 
     const summary = summaryService.debtSummary(debts);
+    
+    var monthName = utils.getMonthName(month);
 
-    return summary;
+    const dayName = year + " " + monthName +  " " + day +  " - " + utils.getDayName(day);
+
+    const body = {
+        day: dayName,
+        debts: summary.debts, 
+    };
+
+    const customSummary = {
+        status : summary.status,
+        body : body,
+        total : summary.total,
+        paid : summary.paid,
+        unpaid : summary.unpaid,
+        items : summary.items
+    };
+
+    return customSummary;
 }
 
 async function daily(year, month) {
@@ -123,6 +141,11 @@ async function daily(year, month) {
     ]);
 
     const summary = summaryService.debtSummary(debts);
+    
+    // summary.debts.forEach(function(debt) {
+       
+    // });
+
 
     return summary;
 }

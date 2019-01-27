@@ -4,7 +4,10 @@ module.exports = {
 };
 
 function getDayName(date) {
-    switch (date.getDay()) {
+    return getDayName(date.getDay());
+}
+function getDayName(day) {
+    switch (day) {
         case 0:
             return "sunday";
         case 1:
@@ -24,8 +27,13 @@ function getDayName(date) {
     }
 }
 
+
 function getMonthName(date) {
-    switch (date.getMonth()) {
+    return getMonthName(date.getMonth());
+}
+
+function getMonthName(month) {
+    switch (month) {
         case 0:
             return "January";
         case 1:
