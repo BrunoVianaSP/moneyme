@@ -24,7 +24,7 @@ const incomeController = require('./features/income/income.controller');
 const creditController = require('./features/credit/credit.controller');
 
 // api routes
-app.use('/user', userController);
+app.use('/users', userController);
 app.use('/debts', debtController);
 app.use('/cards', cardController);
 app.use('/incomes', incomeController);
