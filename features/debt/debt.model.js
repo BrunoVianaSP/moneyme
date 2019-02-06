@@ -4,7 +4,7 @@ const Schema = mongoose.Schema;
 const schema = new Schema({
     date: { type: Date, required: true, unique: false },
     day: { type: String, required: false },
-    item: { type: String, required: true },
+    name: { type: String, required: true },
     category: { type: String, required: true },
     subcategory: { type: String, required: false },
     price: { type: Number, required: true },
