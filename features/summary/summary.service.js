@@ -19,7 +19,7 @@ function debtSummary(debts) {
         total += debt.price;
     });
     const summary = {
-        debts: debts,
+        list: debts,
         total: total,
         paid: paid,
         unpaid: unpaid,
