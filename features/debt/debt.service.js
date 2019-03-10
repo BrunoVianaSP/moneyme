@@ -29,7 +29,6 @@ function saveDebt(debtParam, email) {
     const debt = new Debt(debtParam);
     debt.owner = email;
     debt.day = utils.getDayName(debt.date);
-    console.log({debt});
     debt.save();
 }
 
@@ -41,12 +40,11 @@ async function create(debtParam, email) {
     }
 }
 
-async function update(debtParam) {
-    const user = await Debt.findOne({ _id: debtParam._id });
-
-    Object.assign(user, debtParam);
-
-    await user.save();
+async function update(id, debtParam) {
+    const found = await Debt.findOne({ _id: db.toId(id)}).select('-hash');
+    console.log({found});
+    Object.assign(found, debtParam);
+    await found.save();
 }
 
 async function _delete(id) {
@@ -59,8 +57,6 @@ async function all(email) {
     const summary = summaryService.debtSummary(debts);
     return summary;
 }
-
-
 
 async function day(year, month, day) {
     console.log({year, month, day});
