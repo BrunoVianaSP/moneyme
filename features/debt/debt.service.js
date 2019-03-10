@@ -19,23 +19,25 @@ async function getById(id) {
     return await Debt.findById(id).select('-hash');
 }
 
-function saveDebts(debts) {
+function saveDebts(debts, email) {
     debts.forEach(function (res) {
-        saveDebt(res)
+        saveDebt(res, email)
     });
 }
 
-function saveDebt(debtParam) {
+function saveDebt(debtParam, email) {
     const debt = new Debt(debtParam);
+    debt.owner = email;
     debt.day = utils.getDayName(debt.date);
+    console.log({debt});
     debt.save();
 }
 
-async function create(debtParam) {
+async function create(debtParam, email) {
     if(debtParam instanceof Array) {
-        saveDebts(debtParam);
+        saveDebts(debtParam, email);
     } else {
-        await saveDebt(debtParam)
+        await saveDebt(debtParam, email)
     }
 }
 
@@ -51,8 +53,9 @@ async function _delete(id) {
     await Debt.findByIdAndRemove(id);
 }
 
-async function all() {
-    var debts = await Debt.find().select('-hash');
+async function all(email) {
+    console.log(all);
+    var debts = await Debt.find({owner: email}).select('-hash');
     const summary = summaryService.debtSummary(debts);
     return summary;
 }

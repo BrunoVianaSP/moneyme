@@ -4,6 +4,7 @@ const debtService = require('./debt.service');
  
 // routes
 router.post('/', create);
+router.post('/:id', _delete);
 router.get('/', all);
 router.get('/day', day);
 router.get('/daily', daily);
@@ -12,13 +13,22 @@ router.get('/monthly', monthly);
 router.get('/year', year);
 
 function create(req, res, next) {
-    debtService.create(req.body)
+    console.log("email: " + req.query.email);
+    debtService.create(req.body, req.query.email)
+        .then(() => res.json({"status" : 201}))
+        .catch(err => next(err));
+}
+
+function _delete(req, res, next) {
+    console.log("id: " + req.query.id);
+    debtService._delete(req.query.id)
         .then(() => res.json({"status" : 201}))
         .catch(err => next(err));
 }
 
 function all(req, res, next) {
-    debtService.all()
+    console.log("email: " + req.query.email);
+    debtService.all(req.query.email)
         .then(result => res.json({"status" : 200, "body" : result}))
         .catch(err => next(err));
 }
